@@ -1,27 +1,36 @@
-import React, { useState } from "react";
-import { Route, Switch } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import axios from "axios";
 import NavBar from "./NavBar";
 import MoviesPage from "./MoviesPage";
 
 function App() {
-  const [movies, setMovies] = useState({
-    1: { id: 1, title: "A River Runs Through It" },
-    2: { id: 2, title: "Se7en" },
-    3: { id: 3, title: "Inception" },
-  });
+  const [movies, setMovies] = useState([]);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      const response = await axios.get(
+        "https://jsonmock.hackerrank.com/api/movies"
+      );
+      setMovies(response.data.data);
+    };
+    fetchMovies();
+  }, []);
 
   return (
-    <div>
-      <NavBar />
-      <Switch>
-        <Route path="/movies">
-          <MoviesPage movies={movies} />
-        </Route>
-        <Route exact path="/">
-          <div>Home</div>
-        </Route>
-      </Switch>
-    </div>
+    <Router>
+      <div className="App">
+        <NavBar />
+        <Switch>
+          <Route exact path="/">
+            <h1>Home Page</h1>
+          </Route>
+          <Route exact path="/movies/:movieId">
+            <MoviesPage movies={movies} />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
